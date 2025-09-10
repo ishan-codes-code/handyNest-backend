@@ -7,14 +7,18 @@ const workerRouter = require("./routes/workers");
 
 const port = process.env.PORT || 3000;
 
-app.use(
-  cors({
-    origin: (origin, callBack) => {
-      callBack(null, true);
-    },
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (origin === process.env.ALLOWED_ORIGIN) {
+      callback(null, true); // origin allowed
+    } else {
+      callback(new Error("Not allowed by CORS")); // origin not allowed
+    }
+  },
+};
+
+app.use(cors(corsOptions));
+
 app.use("/workers", workerRouter);
 
 app.get("/", (req, res) => {
