@@ -2,12 +2,18 @@ const express = require("express");
 require("dotenv").config();
 require("./models/dbConnect");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const app = express();
-const workerRouter = require("./routes/workers");
+const bodyParser = require("body-parser");
+const workerRouter = require("./routes/workerRouter");
+const serviceRouter = require("./routes/serviceRouter");
+const authRouter = require("./routes/authRouter");
 
 const port = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -23,6 +29,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use("/workers", workerRouter);
+app.use("/services", serviceRouter);
+app.use("/auth", authRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

@@ -1,34 +1,51 @@
 const mongoose = require("mongoose");
 
-const workerSchema = new mongoose.Schema(
+const workerDetSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    verified: { type: Boolean, default: false },
-    contactPerson: { type: String },
-    title: { type: String }, // e.g. "Electrician"
-    hourlyRate: { type: Number },
-    responseTime: { type: String }, // e.g. "1h"
-    rating: { type: Number },
-    reviewCount: { type: Number },
-    experience: { type: String }, // e.g. "8 yrs"
-    distance: { type: String }, // e.g. "5 miles"
-    completedJobs: { type: Number },
+    name: { type: String, required: true }, // Full name of worker
+    verified: { type: Boolean, default: false }, // Admin verified or not
+    email: { type: String, required: true, unique: true }, // User's email address
+    svcDesc: { type: String, required: true }, // e.g., "Electrician"
+    experience: { type: String }, // e.g., "8 yrs"
+    rating: { type: Number, default: 0 }, // Avg. rating
+    reviewCount: { type: Number, default: 0 }, // Number of reviews
+    completedJobs: { type: Number, default: 0 }, // Completed jobs count
 
-    specializations: [{ type: String }], // array of strings
-    certifications: [{ type: String }], // array of strings
+    phone: { type: String, required: true }, // Primary contact
 
-    insurance: { type: String },
-    phone: { type: String },
-    email: { type: String },
+    city: { type: String, required: true },
+    pincode: { type: String }, // Serviceable areas
 
-    availability: { type: String }, // e.g. "Available Today"
-    pincode: [{ type: String }],
-    city: { type: String },
+    workerWage: { type: Number }, // Minimum service charge
+    languages: [{ type: String }], // e.g., ["Hindi", "Bhojpuri"]
+    workType: {
+      type: String,
+      enum: ["Individual", "Team"],
+      default: "Individual",
+    },
 
-    services: [{ type: mongoose.Schema.Types.ObjectId, ref: "services" }],
+    profilePhoto: { type: String }, // Image URL
+    idProofVerified: { type: Boolean, default: false }, // Aadhaar / Voter ID verified
+    bio: { type: String, required: true }, // Short description
+    status: { type: String, enum: ["active", "inactive"], default: "active" },
+
+    service: { type: mongoose.Schema.Types.ObjectId, ref: "services" }, // Link to services
   },
   { timestamps: true }
 );
 
-const workerModel = mongoose.model("Workers", workerSchema);
-module.exports = workerModel;
+const workerDetailsModel = mongoose.model("workerDetails", workerDetSchema);
+
+const workerSchema = new mongoose.Schema(
+  {
+    details: { type: mongoose.Schema.Types.ObjectId, ref: "workerDetails" },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+  },
+  { timestamps: true }
+);
+
+const workerModel = mongoose.model("workers", workerSchema);
+
+module.exports = { workerModel, workerDetailsModel };
