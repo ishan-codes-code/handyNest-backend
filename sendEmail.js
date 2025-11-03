@@ -1,5 +1,3 @@
-const fetch = require("node-fetch");
-
 async function sendEmail(to, subject, htmlContent) {
   const response = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
@@ -9,7 +7,7 @@ async function sendEmail(to, subject, htmlContent) {
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      sender: { name: "HandyNest", email: "support@handynest.netlify.app" },
+      sender: { name: "HandyNest", email: process.env.BREVO_FROM },
       to: [{ email: to }],
       subject,
       htmlContent,
