@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+const fetch = require("node-fetch");
 
 async function sendEmail(to, subject, htmlContent) {
   const response = await fetch("https://api.brevo.com/v3/smtp/email", {
