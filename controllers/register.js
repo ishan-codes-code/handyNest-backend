@@ -2,7 +2,7 @@ const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { verifyMailTemplate } = require("../assets/mailTemaplate");
-const { sendMail } = require("./sendMail");
+const { sendEmail } = require("../sendEmail");
 
 const registerController = async (req, res) => {
   try {
@@ -30,17 +30,18 @@ const registerController = async (req, res) => {
 
     const mailTemaplate = verifyMailTemplate(token);
 
-    await sendMail(
-      email,
-      mailTemaplate.subject,
-      mailTemaplate.text,
-      mailTemaplate.html
-    );
+    await sendEmail(email, mailTemaplate.subject, mailTemaplate.html);
+
+    // await sendMail(
+    //   email,
+    //   mailTemaplate.subject,
+    //   mailTemaplate.text,
+    //   mailTemaplate.html
+    // );
 
     return res.status(201).json({
       success: true,
-      message: `User registered successfully!`,
-      desc: `A verification email has been sent to ${email}`,
+      message: `User registered successfully! A verification email has been sent to ${email}`,
     });
   } catch (err) {
     return res
@@ -67,8 +68,7 @@ const verifyMailLink = async (req, res) => {
     }
     return res.status(200).json({
       success: true,
-      message: "Email verified successfully",
-      desc: "You can now login to your account.",
+      message: "Email verified successfully.You can now login to your account.",
     });
   } catch (err) {
     return res

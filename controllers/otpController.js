@@ -1,19 +1,5 @@
-// const nodemailer = require("nodemailer");
-
-// let transporter = nodemailer.createTransport({
-//   host: process.env.BREVO_HOST,
-//   port: Number(process.env.BREVO_PORT) || 587,
-//   secure: false, // 587 uses STARTTLS
-//   auth: {
-//     user: process.env.BREVO_USER,
-//     pass: process.env.BREVO_PASS,
-//   },
-//   connectionTimeout: 15000, // 15s
-//   greetingTimeout: 15000,
-//   logger: true,
-//   debug: true, // shows SMTP conversation in logs
-// });
 const { sendEmail } = require("../sendEmail");
+const { workerModel } = require("../models/workerModel");
 
 let otpCache = {};
 let cleanupTimer = null;
@@ -23,6 +9,15 @@ const sendMailOtp = async (req, res) => {
 
   try {
     const userMail = req.query.mail;
+
+    const worker = await workerModel.findOne({ email: userMail });
+
+    if (worker) {
+      return res.status(400).json({
+        success: false,
+        message: "Worker with this email already exists.",
+      });
+    }
 
     let mailOpt = {
       from: `"Handynest" <${process.env.BREVO_FROM}>`,
@@ -50,9 +45,6 @@ const sendMailOtp = async (req, res) => {
   `,
     };
 
-    // let info = await transporter.sendMail(mailOpt);
-
-    // console.log("Mail sent ", info.messageId);
     await sendEmail(userMail, mailOpt.subject, mailOpt.html);
 
     otpCache[userMail] = {
