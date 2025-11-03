@@ -1,11 +1,17 @@
 const nodemailer = require("nodemailer");
 
 let transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: process.env.BREVO_HOST,
+  port: Number(process.env.BREVO_PORT) || 587,
+  secure: false, // 587 uses STARTTLS
   auth: {
-    user: process.env.EMAIL,
-    pass: process.env.PASS,
+    user: process.env.BREVO_USER,
+    pass: process.env.BREVO_PASS,
   },
+  connectionTimeout: 15000, // 15s
+  greetingTimeout: 15000,
+  logger: true,
+  debug: true, // shows SMTP conversation in logs
 });
 
 let otpCache = {};
@@ -18,7 +24,7 @@ const sendMailOtp = async (req, res) => {
     const userMail = req.query.mail;
 
     let mailOpt = {
-      from: `"Handynest" <${process.env.EMAIL}>`,
+      from: `"Handynest" <${process.env.BREVO_FROM}>`,
       to: userMail,
       subject: "Your OTP Code",
       text: `Your OTP is ${otp}`, // fallback plain text
