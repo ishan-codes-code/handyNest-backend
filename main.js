@@ -28,6 +28,14 @@ app.use(cookieParser());
 
 // app.use(cors(corsOptions));
 
+app.use((req, res, next) => {
+  const origin = req.get("Origin") || req.get("Referer");
+  if (!origin || !origin.startsWith(process.env.ALLOWED_ORIGIN)) {
+    return res.status(403).json({ error: "Access forbidden" });
+  }
+  next();
+});
+
 app.use(
   cors({
     origin: process.env.ALLOWED_ORIGIN,
