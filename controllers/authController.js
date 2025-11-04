@@ -43,7 +43,6 @@ const login = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "none",
-      domain: process.env.ALLOWED_ORIGIN,
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -108,7 +107,6 @@ const workerLogin = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "none",
-      domain: process.env.ALLOWED_ORIGIN,
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
